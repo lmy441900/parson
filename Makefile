@@ -1,23 +1,23 @@
-CC = gcc
-CFLAGS = -O0 -g -Wall -Wextra -std=c89 -pedantic-errors
+all: parson.o
 
-CXX = g++
-CXXFLAGS = -O0 -g -Wall -Wextra
+TESTS = test testcpp
 
-all: parson.o test testcpp
+.PHONY: all tests
 
-.PHONY: test testcpp
-
-test: tests.c parson.c
-	$(CC) $(CFLAGS) -o $@ tests.c parson.c
-	./$@
-
-testcpp: tests.c parson.c
-	$(CXX) $(CXXFLAGS) -o $@ tests.c parson.c
-	./$@
+tests: $(TESTS)
+	for t in $(TESTS); do \
+		./$$t; \
+	done
 
 clean:
-	rm -f test testcpp *.o
+	rm -f *.o
+	rm -f test testcpp
+
+test: tests.c parson.o
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
+testcpp: tests.c parson.o
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $^
 
 %.o: %.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
